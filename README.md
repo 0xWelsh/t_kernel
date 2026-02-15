@@ -1,4 +1,5 @@
 # Toy Kernel(x86, Multiboot, C)
+![Linux](/images/icons8-linux-48.png)
 ## Overview
 This project is a minimal toy operating system kernel written in C
 with a small amount of x86 assembly. It is designed to boot using GRUB
