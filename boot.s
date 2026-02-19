@@ -26,3 +26,12 @@ align 16
 stcak_bottom:
 	resb 16384		;16 kb stack
 stack_top:
+
+global isr0
+
+isr0:
+	cli
+	mov eax, 0xB8000
+	mov byte [eax], 'I'
+	mov byte [eax+1], 0x4F
+	hlt
