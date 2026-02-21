@@ -1,11 +1,13 @@
 CC := $(shell command -v x86_64-elf-gcc 2>/dev/null || echo gcc)
-AS = nasm
+AS := nasm
 LD := $(CC)
 
-CFLAGS = -ffreestanding -m32 -c
-LDFLAGS = -T linker.ld -ffreestanding -O2 -nostdlib -m32
+CFLAGS := -ffreestanding -m32 -c
+LDFLAGS := -T linker.ld -ffreestanding -O2 -nostdlib -m32
 
-all: iso
+OBJS := boot.o kernel.o idt.o
+
+all: myos.iso
 
 boot.o: boot.s
 	$(AS) -f elf32 boot.s -o boot.o
@@ -13,17 +15,20 @@ boot.o: boot.s
 kernel.o: kernel.c
 	$(CC) $(CFLAGS) kernel.c -o kernel.o
 
-kernel.bin: boot.o kernel.o linker.ld
-	$(LD) $(LDFLAGS) boot.o kernel.o -o kernel.bin
+idt.o: idt.c
+	$(CC) $(CFLAGS) idt.c -o idt.o
 
-iso: kernel.bin
+kernel.bin: $(OBJS)
+	$(LD) $(LDFLAGS) $(OBJS) -o kernel.bin
+
+myos.iso: kernel.bin
 	mkdir -p iso/boot/grub
 	cp kernel.bin iso/boot/
-	@if [ -f grub.cfg ]; then cp grub.cfg iso/boot/grub/; fi
+	cp grub.cfg iso/boot/grub/
 	grub-mkrescue -o myos.iso iso
 
-run: iso
-	qemu-system-x86_64 -cdrom myos.iso -display gtk
+run: myos.iso
+	qemu-system-x86_64 -cdrom myos.iso -boot d
 
 clean:
-	rm -rf *.o *.bin *.iso iso/boot/kernel.bin
+	rm -rf *.o *.bin *.iso iso
