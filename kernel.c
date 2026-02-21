@@ -4,7 +4,7 @@
 
 void kernel_main(void) {
 
-	volative char* video = (volative char*)0xB8000;
+	volatile char* video = (volatile char*)0xB8000;
 
 	const char* message = "Kernel loaded successfully.";
 	for (size_t i = 0; message[i] != '\0'; i++) {
