@@ -31,6 +31,6 @@ isr0:
 
 section .bss
 align 16
-stcak_bottom:
+stack_bottom:
 	resb 16384		;16 kb stack
 stack_top:

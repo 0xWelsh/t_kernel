@@ -1,4 +1,4 @@
-the IDT (interrupt descriptor table) is just an array of entries that tell the CPU:
+The IDT (Interrupt Descriptor Table) is an array of entries that tells the CPU:
 "if interrupt number X happens, jump to address Y"
 
 Each entry contains:
@@ -6,4 +6,4 @@ Each entry contains:
 - segment selector
 - flags
 
-the CPU loads the IDT using the `lidt` instruction
+The CPU loads the IDT using the `lidt` instruction.

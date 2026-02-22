@@ -1,23 +1,24 @@
-# Toy Kernel(x86, Multiboot, C)
+# Toy Kernel (x86, Multiboot, C)
 ![Linux](/images/icons8-linux-48.png)
+
 ## Overview
-This project is a minimal toy operating system kernel written in C
-with a small amount of x86 assembly. It is designed to boot using GRUB
-via the Multiboot specification and run inside QEMU.
+This project is a minimal toy operating system kernel written in C with
+a small amount of x86 assembly. It is designed to boot using GRUB via
+the Multiboot specification and run inside QEMU.
 
 The goal of this project is educational; to understand the fundamentals
-of operating system development which includes:
-    Boot process and Multiboot
-    Linking and memory layout
-    stack setup
-    freestanding C environment
-    direct hardware memory access (VGA text buffer)
-and I'm not intending to make it a production operating system.
+of operating system development, including:
+- Boot process and Multiboot
+- Linking and memory layout
+- Stack setup
+- Freestanding C environment
+- Direct hardware memory access (VGA text buffer)
 
+It is not intended to be a production operating system.
 
 ## Architecture
-Target: x86(32-bit protected mode)
-Bootloader: GRUB (multiboot compliant)
+Target: x86 (32-bit protected mode)
+Bootloader: GRUB (Multiboot-compliant)
 Language: C (freestanding) + Assembly
 Emulator: QEMU
 
@@ -27,56 +28,58 @@ and calls `kernel_main()` in C.
 
 The kernel writes directly to VGA memory at `0xB8000` to display text.
 
-
 Here's the project structure:
 ```bash
-src/
-    boot.s
-    kernel.c
-linker.ld #dis the linker script
+boot.s
+kernel.c
+idt.c
+idt.h
+linker.ld    # linker script
 iso/
-    grub.cfg #grub configuration
+    boot/
+        grub/
+            grub.cfg
 Makefile
 README.md
 ```
 
 ## Requirements
 You must have:
-    x86_64-elf-gcc
-    x86_64_elf-binutils
-    nams
-    qemu-system-x86
-    GRUB tools (grub-mkrescue)
-the kernel must be built in freestanding mode
+- x86_64-elf-gcc
+- x86_64-elf-binutils
+- nasm
+- qemu-system-x86_64
+- GRUB tools (`grub-mkrescue`)
+
+The kernel must be built in freestanding mode.
 
 ## Build Instructions
-Build the kernel
-```go
+Build the kernel:
+```bash
 make
 ```
-this will:
+This will:
 - compile `boot.s` and `kernel.c`
-- link them using `linker.id`
+- link them using `linker.ld`
 - create a GRUB-bootable ISO image
 
 ## Run
 Launch in QEMU:
-```arduino
-make fun
+```bash
+make run
 ```
 or
 ```bash
-qemu-system-x86_64 -cdrom build/myos.iso
+qemu-system-x86_64 -cdrom myos.iso
 ```
 
-if successful, the screen should display:
+If successful, the screen should display:
 `Kernel loaded successfully.`
 
-## What this project demostrates
-How control transfers from bootloaders to kernel
-How to define an entry point manually
-How to work without a standard library
-How linking and memory placement affect execution
-How C behaves in a freestanding environment
-
+## What This Project Demonstrates
+- How control transfers from bootloaders to the kernel
+- How to define an entry point manually
+- How to work without a standard library
+- How linking and memory placement affect execution
+- How C behaves in a freestanding environment
 
