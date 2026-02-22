@@ -2,8 +2,8 @@ CC := $(shell command -v x86_64-elf-gcc 2>/dev/null || echo gcc)
 AS := nasm
 LD := $(CC)
 
-CFLAGS := -ffreestanding -m32 -c
-LDFLAGS := -T linker.ld -ffreestanding -O2 -nostdlib -m32
+CFLAGS := -ffreestanding -m32 -fno-pie -fno-pic -fno-stack-protector -c
+LDFLAGS := -T linker.ld -ffreestanding -O2 -nostdlib -no-pie -m32
 
 OBJS := boot.o kernel.o idt.o
 
@@ -28,7 +28,7 @@ myos.iso: kernel.bin
 	grub-mkrescue -o myos.iso iso
 
 run: myos.iso
-	qemu-system-x86_64 -cdrom myos.iso -boot d
+	qemu-system-x86_64 -cdrom myos.iso -boot d -machine pc
 
 clean:
 	rm -rf *.o *.bin *.iso iso

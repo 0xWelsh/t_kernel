@@ -7,6 +7,7 @@ align 4
 
 section .text
 global _start
+global isr0
 extern kernel_main
 
 _start:
@@ -21,17 +22,15 @@ _start:
 	hlt			; halt cpu
 	jmp .hang		;infinite loop
 
-section .bss
-align 16
-stcak_bottom:
-	resb 16384		;16 kb stack
-stack_top:
-
-global isr0
-
 isr0:
 	cli
 	mov eax, 0xB8000
 	mov byte [eax], 'I'
 	mov byte [eax+1], 0x4F
-	hlt
+	iret
+
+section .bss
+align 16
+stcak_bottom:
+	resb 16384		;16 kb stack
+stack_top:
