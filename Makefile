@@ -5,12 +5,15 @@ LD := $(CC)
 CFLAGS := -ffreestanding -m32 -O2 -Wall -Wextra -fno-pie -fno-pic -fno-stack-protector -fno-asynchronous-unwind-tables -fno-unwind-tables -fno-exceptions -c
 LDFLAGS := -T linker.ld -ffreestanding -O2 -nostdlib -no-pie -m32 -Wl,--build-id=none
 
-OBJS := boot.o kernel.o idt.o
+OBJS := boot.o isr.o kernel.o idt.o
 
 all: myos.iso
 
 boot.o: boot.s
 	$(AS) -f elf32 boot.s -o boot.o
+
+isr.o: isr.s
+	$(AS) -f elf32 isr.s -o isr.o
 
 kernel.o: kernel.c
 	$(CC) $(CFLAGS) kernel.c -o kernel.o

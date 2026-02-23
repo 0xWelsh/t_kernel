@@ -4,7 +4,6 @@
 #include <stdint.h>
 
 struct idt_entry {
-
 	uint16_t base_low;
 	uint16_t sel;
 	uint8_t always0;
@@ -18,6 +17,15 @@ struct idt_ptr {
 	uint32_t base;
 } __attribute__((packed));
 
+struct interrupt_frame {
+
+	uint32_t gs, fs, es, ds;
+	uint32_t edi, esi, ebp, esp, ebx, edx, ecx, eax;
+	uint32_t int_no, err_code;
+	uint32_t eip, cs, eflags, useresp, ss;
+};
+
 void idt_init(void);
+void isr_handler(struct interrupt_frame *frame);
 
 #endif
