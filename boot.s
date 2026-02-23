@@ -16,7 +16,12 @@ _start:
 
 	mov esp, stack_top	; set up stack
 
+	; Multiboot passes magic in EAX and info ptr in EBX.
+	; cdecl: push args right-to-left => (magic, info_ptr)
+	push ebx
+	push eax
 	call kernel_main	; call C function
+	add esp, 8
 
 .hang:
 	hlt			; halt cpu
@@ -24,9 +29,11 @@ _start:
 
 isr0:
 	cli
+	pushad
 	mov eax, 0xB8000
 	mov byte [eax], 'I'
 	mov byte [eax+1], 0x4F
+	popad
 	iret
 
 section .bss

@@ -22,11 +22,16 @@ static inline void lidt(struct idt_ptr* idtp) {
 
 void idt_init() {
 	uint16_t code_selector;
+	uint32_t i;
 
 	__asm__ __volatile__("mov %%cs, %0" : "=r" (code_selector));
 
 	idtp.limit = (sizeof(struct idt_entry) * 256) - 1;
 	idtp.base = (uint32_t)&idt;
+
+	for (i = 0; i < 256; i++) {
+		idt_set_gate((uint8_t)i, 0, 0, 0);
+	}
 
 	idt_set_gate(0, (uint32_t)isr0, code_selector, 0x8E);
 

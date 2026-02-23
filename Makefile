@@ -2,8 +2,8 @@ CC := $(shell command -v x86_64-elf-gcc 2>/dev/null || echo gcc)
 AS := nasm
 LD := $(CC)
 
-CFLAGS := -ffreestanding -m32 -fno-pie -fno-pic -fno-stack-protector -c
-LDFLAGS := -T linker.ld -ffreestanding -O2 -nostdlib -no-pie -m32
+CFLAGS := -ffreestanding -m32 -O2 -Wall -Wextra -fno-pie -fno-pic -fno-stack-protector -fno-asynchronous-unwind-tables -fno-unwind-tables -fno-exceptions -c
+LDFLAGS := -T linker.ld -ffreestanding -O2 -nostdlib -no-pie -m32 -Wl,--build-id=none
 
 OBJS := boot.o kernel.o idt.o
 
