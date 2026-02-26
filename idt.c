@@ -1,6 +1,7 @@
 #include "idt.h"
 
 extern void *isr_stub_table[];
+extern void *irq_stub_table[];
 
 static struct idt_entry idt[256];
 static struct idt_ptr idtp;
@@ -28,6 +29,10 @@ void idt_init(void) {
 
 	for (i = 0; i < 32; i++) {
 		idt_set_gate((uint8_t)i, (uint32_t)isr_stub_table[i], 0x08, 0x8E);
+	}
+
+	for (i = 0; i < 16; i++) {
+		idt_set_gate((uint8_t)(32 + i), (uint32_t)irq_stub_table[i], 0x08, 0x8E);
 	}
 
 	idtp.limit = (uint16_t)(sizeof(idt) - 1);

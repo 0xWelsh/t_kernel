@@ -1,6 +1,9 @@
 #include <stddef.h>
 #include <stdint.h>
+#include "gdt.h"
 #include "idt.h"
+#include "io.h"
+#include "pic.h"
 
 #define MULTIBOOT_BOOTLOADER_MAGIC 0x2BADB002
 
@@ -40,6 +43,25 @@ void isr_handler(struct interrupt_frame* frame) {
 		vga_write(exception_names[frame->int_no], 0x4F, 3);
 		panic("CPU exception");
 	}
+
+	if (frame->int_no >= 32 && frame->int_no < 48) {
+		uint32_t irq = frame->int_no - 32;
+
+		if (irq == 0) {
+			static uint32_t ticks;
+			ticks++;
+			if ((ticks % 100) == 0) {
+				vga_write("Timer IRQ alive.", 0x0B, 4);
+			}
+		}
+
+		if (irq == 1) {
+			(void)inb(0x60);
+			vga_write("Keyboard IRQ received.", 0x0E, 5);
+		}
+
+		pic_send_eoi((uint8_t)irq);
+	}
 }
 
 void kernel_main(uint32_t multiboot_magic, uint32_t multiboot_info_addr) {
@@ -56,11 +78,18 @@ void kernel_main(uint32_t multiboot_magic, uint32_t multiboot_info_addr) {
 	vga_write("Kernel loaded successfully.", 0x07, 0);
 	vga_write("Multiboot handoff verified.", 0x0A, 1);
 
+	// initialize global descriptor table
+	gdt_init();
+
+	// remap PIC from 0x08-0x0F/0x70-0x77 to 0x20-0x2F
+	pic_remap(0x20, 0x28);
+
 	// initialize interrupt descriptor table
 	idt_init();
 
-	// trigger interrupt 0 manually
-	__asm__ __volatile__("int $0");
+	vga_write("Interrupts initialized.", 0x0A, 2);
+	__asm__ __volatile__("sti");
+	vga_write("Interrupts enabled.", 0x0A, 3);
 
 	while (1) {
 		__asm__ __volatile__("hlt");
